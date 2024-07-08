@@ -14,3 +14,12 @@ user_start_kb = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True,
 )
+
+cancel_kb = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text='отмена'),
+
+        ],
+        ], resize_keyboard=True
+)
