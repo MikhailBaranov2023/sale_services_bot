@@ -9,7 +9,7 @@ user_start_kb = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text='О нас'),
-            KeyboardButton(text='Подписаться')
+            KeyboardButton(text='Профиль')
         ]
     ],
     resize_keyboard=True,

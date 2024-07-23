@@ -1,53 +1,50 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Boolean, Text, DateTime, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import String, Text, Float, Boolean, DateTime, func, Integer, BigInteger, ForeignKey, Column
 
 
 class Base(DeclarativeBase):
-    pass
+    created: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
 
 
 class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    chat_id = Column(Integer, nullable=True)
-    username = Column(String, unique=True, nullable=False)
-    phone = Column(String, nullable=False, unique=True)
-    referral_code = Column(String, nullable=True)
+    __tablename__ = 'users'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_name: Mapped[str] = mapped_column(unique=True, nullable=True, default='нет username')
+    chat_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    spam: Mapped[bool] = mapped_column(default=False)
+    blocked: Mapped[bool] = mapped_column(default=False)
 
 
 class Product(Base):
-    __tablename__ = "products"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    price = Column(Integer, nullable=False)
-    image = Column(String, nullable=False)
+    __tablename__ = 'products'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    title: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    image: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    price: Mapped[float] = mapped_column(Float(asdecimal=True), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
 
 
 class Order(Base):
-    __tablename__ = 'orders'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    type_order = Column(String(50), nullable=False)
-    product = Column(Integer, ForeignKey('products.id'))
-    description = Column(Text, nullable=True)
-    order_amount = Column(Integer, nullable=True)
-    order_status = Column(String(50), nullable=False, default='в обработке')
-    date = Column(Date, nullable=False, default=func.now)
-    user = Column(Integer, ForeignKey('users.id'))
+    __tablename__ = 'order'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    type: Mapped[str] = mapped_column(String(50), nullable=False)
+    description: Mapped[str] = mapped_column(Text)
+    amount: Mapped[float] = mapped_column(Float(asdecimal=True), nullable=True)
+    payment_status: Mapped[bool] = mapped_column(Boolean, default=False)
+    user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
 
 
 class OrderShop(Base):
     __tablename__ = 'order_shop'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    product_urls = Column(String(500), nullable=False)
-    address = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
-    # order_amount = Column(Integer, nullable=True)
-    payment_status = Column(Boolean, default=False)
-    order_status = Column(String(255), nullable=False, default='в обработке')
-    # date = Column(Date, nullable=False, default=func.now)
-    # track_number = Column(String(500), nullable=True)
-    # user = Column(Integer, ForeignKey('users.id'))
-    # username = Column(String, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    url: Mapped[str] = mapped_column(Text, nullable=True)
+    description: Mapped[str] = mapped_column(Text)
+    address: Mapped[str] = mapped_column(String(200), nullable=True)
+    amount: Mapped[float] = mapped_column(Float(asdecimal=True), nullable=True)
+    payment_status: Mapped[bool] = mapped_column(Boolean, default=False)
+    order_status: Mapped[bool] = mapped_column(Boolean, default=False)
+    track_number: Mapped[str] = mapped_column(String(50), nullable=True)
+    cancel_status: Mapped[bool] = mapped_column(Boolean, default=False)
+    user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
