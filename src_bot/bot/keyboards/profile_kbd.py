@@ -10,7 +10,7 @@ profile_kbd = ReplyKeyboardMarkup(
             KeyboardButton(text='Получить реферальный код'),
         ],
         [
-            KeyboardButton(text='назад')
+            KeyboardButton(text='Главное меню')
         ]
 
     ],

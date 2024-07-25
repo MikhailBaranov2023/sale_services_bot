@@ -13,6 +13,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_name: Mapped[str] = mapped_column(unique=True, nullable=True, default='нет username')
     chat_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    referral_code: Mapped[str] = mapped_column(String(50), nullable=True)
     spam: Mapped[bool] = mapped_column(default=False)
     blocked: Mapped[bool] = mapped_column(default=False)
 
@@ -29,10 +30,12 @@ class Product(Base):
 class Order(Base):
     __tablename__ = 'order'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    url: Mapped[str] = mapped_column(Text, nullable=True)
     type: Mapped[str] = mapped_column(String(50), nullable=False)
     description: Mapped[str] = mapped_column(Text)
     amount: Mapped[float] = mapped_column(Float(asdecimal=True), nullable=True)
     payment_status: Mapped[bool] = mapped_column(Boolean, default=False)
+    cancel_status: Mapped[bool] = mapped_column(Boolean, default=False)
     user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
 
 

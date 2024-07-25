@@ -14,6 +14,33 @@ async def orm_create_order_shop(session: AsyncSession, data: dict):
     await session.commit()
 
 
+async def orm_get_order_shop(session: AsyncSession, data: dict):
+    query = select(OrderShop).where(OrderShop.url == data['url'],
+                                    OrderShop.description == data['description'],
+                                    OrderShop.address == data['address'],
+                                    OrderShop.user_id == data['user_id'], )
+    result = await session.execute(query)
+    return result.scalar()
+
+
+async def orm_get_all_current_order_shop(session: AsyncSession):
+    query = select(OrderShop).where(OrderShop.order_status == False, OrderShop.cancel_status == False)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_get_all_cancel_order_shop(session: AsyncSession):
+    query = select(OrderShop).where(OrderShop.cancel_status == True)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_get_all_complete_order_shop(session: AsyncSession):
+    query = select(OrderShop).where(OrderShop.order_status == True)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
 async def orm_update_order_shop(session: AsyncSession, amount, order_shop_id: int):
     query = update(OrderShop).where(OrderShop.id == order_shop_id).values(
         amount=float(amount),
