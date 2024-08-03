@@ -27,4 +27,4 @@ async def orm_check_user(session: AsyncSession, user_id: int):
 async def orm_get_users(session: AsyncSession):
     query = select(User)
     result = await session.execute(query)
-    return result.scalars()
+    return result.scalars().all()

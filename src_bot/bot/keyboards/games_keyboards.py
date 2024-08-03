@@ -9,7 +9,7 @@ games_kbd = ReplyKeyboardMarkup(
             KeyboardButton(text='Steam')
         ],
         [
-            KeyboardButton(text='Назад'),
+            KeyboardButton(text='Главное меню'),
         ]
     ],
     resize_keyboard=True,

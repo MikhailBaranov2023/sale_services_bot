@@ -27,7 +27,7 @@ cancel_kb = ReplyKeyboardMarkup(
 admin_start_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='Cервисов'),
+            KeyboardButton(text='Cервисы'),
             KeyboardButton(text='Игры'),
             KeyboardButton(text='Доставка')
         ],

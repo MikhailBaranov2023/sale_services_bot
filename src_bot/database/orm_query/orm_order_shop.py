@@ -24,7 +24,7 @@ async def orm_get_order_shop(session: AsyncSession, data: dict):
 
 
 async def orm_get_all_current_order_shop(session: AsyncSession):
-    query = select(OrderShop).where(OrderShop.order_status == False, OrderShop.cancel_status == False)
+    query = select(OrderShop).where(OrderShop.payment_status == False, OrderShop.cancel_status == False)
     result = await session.execute(query)
     return result.scalars().all()
 
