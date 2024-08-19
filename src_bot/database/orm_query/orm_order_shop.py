@@ -51,11 +51,18 @@ async def orm_update_order_shop(session: AsyncSession, amount, order_shop_id: in
 
 
 async def orm_add_track_code(session: AsyncSession, track_number, order_shop_id: int):
-    query = update(OrderShop).where(OrderShop.id == order_shop_id).values(
-        track_number=track_number,
-    )
-    await session.execute(query)
-    await session.commit()
+    query = select(OrderShop).where(OrderShop.id == order_shop_id)
+    result = await session.execute(query)
+    obj = result.scalar()
+    if obj.track_number == None:
+        query = update(OrderShop).where(OrderShop.id == order_shop_id).values(
+            track_number=track_number,
+        )
+        await session.execute(query)
+        await session.commit()
+        return True
+    else:
+        return False
 
 
 async def orm_update_status(session: AsyncSession, order_shop_id: int):
@@ -84,3 +91,25 @@ async def orm_user_shop_orders(session: AsyncSession, user_id: int):
     query = select(OrderShop).where(OrderShop.user_id == user_id)
     result = await session.execute(query)
     return result.scalar()
+
+
+async def orm_get_order_shop_wait_shipping(session: AsyncSession):
+    query = select(OrderShop).where(OrderShop.payment_status == True, OrderShop.track_number == None,
+                                    OrderShop.order_status == False, OrderShop.cancel_status == False)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_get_order_shop_wait_complete(session: AsyncSession):
+    query = select(OrderShop).where(OrderShop.order_status == False, OrderShop.track_number != None,
+                                    OrderShop.payment_status == True, OrderShop.cancel_status == False)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_complete_order_shop(session: AsyncSession, order_shop_id: int):
+    query = update(OrderShop).where(OrderShop.id == order_shop_id).values(
+        order_status=True
+    )
+    await session.execute(query)
+    await session.commit()

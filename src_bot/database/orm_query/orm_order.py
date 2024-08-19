@@ -23,15 +23,6 @@ async def orm_get_order(session: AsyncSession, data: dict):
     return result.scalar()
 
 
-async def orm_update_order(session: AsyncSession, amount, order_id: int):
-    query = update(Order).where(Order.id == order_id).values(
-        amount=float(amount),
-        payment_status=True,
-    )
-    await session.execute(query)
-    await session.commit()
-
-
 async def orm_cancel_order(session: AsyncSession, order_id: int):
     query = update(Order).where(Order.id == order_id).values(
         cancel_status=True
@@ -50,3 +41,44 @@ async def orm_user_orders(session: AsyncSession, user_id: int):
     query = select(Order).where(Order.user_id == user_id)
     result = await session.execute(query)
     return result.scalar()
+
+
+async def orm_get_all_current_services_order(session: AsyncSession):
+    query = select(Order).where(Order.payment_status == False, Order.cancel_status == False, Order.type == "services")
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_update_order(session: AsyncSession, amount, order_id: int):
+    query = update(Order).where(Order.id == order_id).values(
+        amount=float(amount),
+        payment_status=True,
+    )
+    await session.execute(query)
+    await session.commit()
+
+
+async def orm_get_cancel_orders(session: AsyncSession):
+    query = select(Order).where(Order.cancel_status == True)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_get_services_order_wait_complete(session: AsyncSession):
+    query = select(Order).where(Order.order_status == False, Order.payment_status == True)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_complete_order(session: AsyncSession, order_id: int):
+    query = update(Order).where(Order.id == order_id).values(
+        order_status=True
+    )
+    await session.execute(query)
+    await session.commit()
+
+
+async def orm_get_completed_order(session: AsyncSession, t):
+    query = select(Order).where(Order.order_status == False)
+    result = await session.execute(query)
+    return result.scalars().all()

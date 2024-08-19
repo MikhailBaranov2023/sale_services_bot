@@ -3,10 +3,10 @@ import os
 from dotenv import load_dotenv, find_dotenv
 import asyncio
 
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher
 
-from src_bot.bot.handlers.user_private_handler import user_private_router
-from src_bot.bot.handlers.admin_private_handler import admin_private_router
+from src_bot.bot.handlers.user_private_handlers.user_private_handler import user_private_router
+from src_bot.bot.handlers.admin_private_handlers.admin_private_handler import admin_private_router
 from src_bot.middlewares.db import DataBaseSession
 
 load_dotenv(find_dotenv())

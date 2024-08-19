@@ -3,10 +3,14 @@ from src_bot.database.models import User
 from sqlalchemy import select, update, delete
 
 
-async def orm_add_user(session: AsyncSession, chat_id: int, user_name: str, ):
+async def orm_add_user(session: AsyncSession, chat_id: int, user_name: str, phone: str, first_name: str,
+                       last_name: str, ):
     obj = User(
         chat_id=chat_id,
         user_name=user_name,
+        phone=phone,
+        first_name=first_name,
+        last_name=last_name
     )
     session.add(obj)
     await session.commit()

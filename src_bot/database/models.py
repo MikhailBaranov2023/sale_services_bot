@@ -11,18 +11,22 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = 'users'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_name: Mapped[str] = mapped_column(unique=True, nullable=True, default='нет username')
-    chat_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    user_name: Mapped[str] = mapped_column(nullable=True,unique=True)
+    chat_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     referral_code: Mapped[str] = mapped_column(String(50), nullable=True)
     spam: Mapped[bool] = mapped_column(default=False)
     blocked: Mapped[bool] = mapped_column(default=False)
+    phone: Mapped[str] = mapped_column(nullable=True, unique=True)
+    first_name: Mapped[str] = mapped_column(nullable=True)
+    last_name: Mapped[str] = mapped_column(nullable=True)
 
 
 class Product(Base):
     __tablename__ = 'products'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    image: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    store_section: Mapped[str] = mapped_column(String(50), nullable=False)
+    image: Mapped[str] = mapped_column(String(200), nullable=True)
     price: Mapped[float] = mapped_column(Float(asdecimal=True), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True)
 
@@ -33,6 +37,7 @@ class Order(Base):
     url: Mapped[str] = mapped_column(Text, nullable=True)
     type: Mapped[str] = mapped_column(String(50), nullable=False)
     description: Mapped[str] = mapped_column(Text)
+    order_status: Mapped[bool] = mapped_column(Boolean, default=False)
     amount: Mapped[float] = mapped_column(Float(asdecimal=True), nullable=True)
     payment_status: Mapped[bool] = mapped_column(Boolean, default=False)
     cancel_status: Mapped[bool] = mapped_column(Boolean, default=False)

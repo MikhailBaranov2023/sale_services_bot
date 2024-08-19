@@ -2,28 +2,6 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMar
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton
 
-shop_kbd = ReplyKeyboardMarkup(
-    keyboard=[
-        [
-            KeyboardButton(text='STOCKX', ),
-            KeyboardButton(text='FARFETCH'),
-            KeyboardButton(text='ASOS')
-        ],
-        [
-            KeyboardButton(text='FOOTLOCKER'),
-            KeyboardButton(text='COURIR'),
-            KeyboardButton(text='ADIDAS')
-        ],
-        [
-            KeyboardButton(text='NIKE'),
-            KeyboardButton(text='ADIDAS')
-        ],
-        [
-            KeyboardButton(text='Оставить заявку')
-        ]
-    ],
-    resize_keyboard=True,
-)
 
 inline_kbd = InlineKeyboardMarkup(inline_keyboard=[
     [
@@ -47,4 +25,12 @@ inline_kbd = InlineKeyboardMarkup(inline_keyboard=[
     ]
 ], resize_keyboard=True,
 
+)
+
+inline_services_kbd = InlineKeyboardMarkup(inline_keyboard=[
+    [
+        InlineKeyboardButton(text='Оставить заявку', callback_data='services')
+    ],
+
+], resize_keyboard=True
 )
