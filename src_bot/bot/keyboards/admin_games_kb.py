@@ -15,6 +15,9 @@ game_kbd = ReplyKeyboardMarkup(
             KeyboardButton(text='GAME Добавить товар'),KeyboardButton(text='GAME Изменить товар')
         ],
         [
+            KeyboardButton(text='Добавить баннер PS')
+        ],
+        [
             KeyboardButton(text='Главное меню')
         ],
     ], resize_keyboard=True

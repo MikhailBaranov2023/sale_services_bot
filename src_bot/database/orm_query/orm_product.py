@@ -34,7 +34,20 @@ async def orm_get_product_services(session: AsyncSession):
 
 
 async def orm_get_product_ps(session: AsyncSession):
-    query = select(Product).where(Product.store_section =='PS Store')
+    query = select(Product).where(Product.store_section == 'PS Store')
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_get_product(session: AsyncSession, id: int):
+    query = select(Product).where(Product.id == id)
+    result = await session.execute(query)
+    return result.scalar()
+
+
+async def orm_get_product_ps_subs(session: AsyncSession, name):
+    query = select(Product).where(Product.store_section == 'PS Store', Product.title.ilike(f'%{name}%')).order_by(
+        Product.price)
     result = await session.execute(query)
     return result.scalars().all()
 

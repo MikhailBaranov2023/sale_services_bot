@@ -11,7 +11,7 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = 'users'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_name: Mapped[str] = mapped_column(nullable=True,unique=True)
+    user_name: Mapped[str] = mapped_column(nullable=True, unique=True)
     chat_id: Mapped[int] = mapped_column(BigInteger, nullable=False, unique=True)
     referral_code: Mapped[str] = mapped_column(String(50), nullable=True)
     spam: Mapped[bool] = mapped_column(default=False)
@@ -56,3 +56,11 @@ class OrderShop(Base):
     track_number: Mapped[str] = mapped_column(String(50), nullable=True)
     cancel_status: Mapped[bool] = mapped_column(Boolean, default=False)
     user_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
+
+
+class Banner(Base):
+    __tablename__ = 'banners'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    image: Mapped[str] = mapped_column(String(200), nullable=True)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    type: Mapped[str] = mapped_column(String(50), nullable=False)

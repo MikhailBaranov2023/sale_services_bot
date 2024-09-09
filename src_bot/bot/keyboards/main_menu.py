@@ -18,7 +18,7 @@ user_start_kb = ReplyKeyboardMarkup(
 cancel_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='отмена'),
+            KeyboardButton(text='отменить'),
 
         ],
     ], resize_keyboard=True
@@ -29,7 +29,24 @@ admin_start_kb = ReplyKeyboardMarkup(
         [
             KeyboardButton(text='Cервисы'),
             KeyboardButton(text='Игры'),
-            KeyboardButton(text='Доставка')
+            KeyboardButton(text='Доставка'),
+            KeyboardButton(text='Добавить баннер')
+        ],
+    ], resize_keyboard=True
+)
+
+admin_short_kb = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text='Заказы ожидающие расчета'),
+            KeyboardButton(text='Заказы ожидающие оплаты'),
+            KeyboardButton(text='Заказы ожидающие исполнения'),
+        ],
+        [
+            KeyboardButton(text='Заказы в доставке'),
+        ],
+        [
+            KeyboardButton(text='Отмененные заказы'),
         ],
     ], resize_keyboard=True
 )

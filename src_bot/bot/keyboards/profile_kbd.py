@@ -20,7 +20,7 @@ profile_kbd = ReplyKeyboardMarkup(
 register_kbd = ReplyKeyboardMarkup(
     keyboard=[
 
-        [KeyboardButton(text='Зарегистрироваться', request_contact=True )],
+        [KeyboardButton(text='Зарегистрироваться', request_contact=True)], [KeyboardButton(text='Назад')]
 
     ],
     resize_keyboard=True,

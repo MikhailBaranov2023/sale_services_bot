@@ -6,11 +6,7 @@ from aiogram.fsm.state import StatesGroup, State
 
 from src_bot.bot.keyboards.inline import get_callback_btns
 from src_bot.bot.keyboards.main_menu import admin_start_kb
-from src_bot.database.orm_query.orm_order import orm_get_all_current_services_order, orm_update_order, orm_check_order
-from src_bot.database.orm_query.orm_order import orm_cancel_order, orm_get_cancel_orders, \
-    orm_get_services_order_wait_complete, orm_complete_order
 from src_bot.database.orm_query.orm_product import orm_create_product, orm_update_product, orm_get_product_ps
-from src_bot.database.orm_query.orm_users import orm_check_user
 
 games_router = Router()
 
@@ -45,7 +41,6 @@ async def check_photo_games(message: types.Message, state: FSMContext):
 @games_router.message(GAMEProduct.image, F.photo)
 async def add_image_games(message: types.Message, state: FSMContext):
     image = message.photo[-1].file_id
-    print(image)
     await state.update_data(image=image)
     await state.set_state(GAMEProduct.title)
     await message.answer('Введите название товара')

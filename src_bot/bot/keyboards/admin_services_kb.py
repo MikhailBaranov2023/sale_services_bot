@@ -14,5 +14,8 @@ services_kbd = ReplyKeyboardMarkup(
         [
             KeyboardButton(text='SERVICES Добавить товар')
         ],
+        [
+            KeyboardButton(text='Главное меню')
+        ],
     ], resize_keyboard=True
 )

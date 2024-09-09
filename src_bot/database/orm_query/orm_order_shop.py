@@ -23,8 +23,16 @@ async def orm_get_order_shop(session: AsyncSession, data: dict):
     return result.scalar()
 
 
-async def orm_get_all_current_order_shop(session: AsyncSession):
-    query = select(OrderShop).where(OrderShop.payment_status == False, OrderShop.cancel_status == False)
+async def orm_get_all_shop_orders_awaiting_calculate(session: AsyncSession):
+    query = select(OrderShop).where(OrderShop.payment_status == False, OrderShop.cancel_status == False,
+                                    OrderShop.amount == None)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_get_all_shop_orders_waiting_for_payment(session: AsyncSession):
+    query = select(OrderShop).where(OrderShop.payment_status == False, OrderShop.cancel_status == False,
+                                    OrderShop.amount != None)
     result = await session.execute(query)
     return result.scalars().all()
 
@@ -41,10 +49,17 @@ async def orm_get_all_complete_order_shop(session: AsyncSession):
     return result.scalars().all()
 
 
-async def orm_update_order_shop(session: AsyncSession, amount, order_shop_id: int):
+async def orm_update_order_shop_amount(session: AsyncSession, amount, order_shop_id: int):
     query = update(OrderShop).where(OrderShop.id == order_shop_id).values(
         amount=float(amount),
-        payment_status=True,
+    )
+    await session.execute(query)
+    await session.commit()
+
+
+async def orm_order_shop_update_payment_status(session: AsyncSession, order_shop_id: int):
+    query = update(OrderShop).where(OrderShop.id == order_shop_id).values(
+        payment_status=True
     )
     await session.execute(query)
     await session.commit()
