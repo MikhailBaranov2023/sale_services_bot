@@ -4,7 +4,7 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
-from src_bot.bot.keyboards.main_menu import admin_start_kb
+from src_bot.bot.keyboards.main_menu import admin_short_kb
 from src_bot.database.orm_query.orm_banners import orm_add_banner
 
 banner_router = Router()
@@ -24,7 +24,7 @@ async def add_banner(message: types.Message, session: AsyncSession, bot: Bot, st
             await state.set_state(Banner.image)
             await message.answer('Добавьте фотографию')
     else:
-        await message.answer('Действия отменены', reply_markup=admin_start_kb)
+        await message.answer('Действия отменены', reply_markup=admin_short_kb)
         await state.clear()
 
 
@@ -61,3 +61,5 @@ async def add_description_banner(message: types.Message, state: FSMContext, sess
     except Exception as e:
         await message.answer('Что то пошло не так')
         await state.clear()
+
+

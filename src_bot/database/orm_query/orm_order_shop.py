@@ -103,9 +103,10 @@ async def orm_check_order_shop(session: AsyncSession, order_shop_id: int):
 
 
 async def orm_user_shop_orders(session: AsyncSession, user_id: int):
-    query = select(OrderShop).where(OrderShop.user_id == user_id)
+    query = select(OrderShop).order_by(OrderShop.created).where(OrderShop.user_id == user_id,
+                                                                OrderShop.cancel_status == False)
     result = await session.execute(query)
-    return result.scalar()
+    return result.scalars()
 
 
 async def orm_get_order_shop_wait_shipping(session: AsyncSession):

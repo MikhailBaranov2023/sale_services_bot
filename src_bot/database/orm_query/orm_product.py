@@ -61,3 +61,41 @@ async def orm_update_product(session: AsyncSession, product_id: int, data: dict)
     )
     await session.execute(query)
     await session.commit()
+
+
+async def orm_update_description_to_shop(session: AsyncSession, description: str):
+    query = update(Product).where(Product.store_section == 'Shop').values(
+        description=description,
+    )
+    await session.execute(query)
+    await session.commit()
+
+
+async def orm_update_image_to_shop(session: AsyncSession, image: str):
+    query = update(Product).where(Product.store_section == 'Shop').values(
+        image=image,
+    )
+    await session.execute(query)
+    await session.commit()
+
+
+async def orm_update_image_to_services(session: AsyncSession, image: str):
+    query = update(Product).where(Product.store_section == 'Services').values(
+        image=image,
+    )
+    await session.execute(query)
+    await session.commit()
+
+
+async def orm_update_image_to_ps(session: AsyncSession, image: str):
+    query = update(Product).where(Product.store_section == 'PS Store').values(
+        image=image,
+    )
+    await session.execute(query)
+    await session.commit()
+
+
+async def get_product_to_title(session: AsyncSession, title: str):
+    query = select(Product).where(Product.title == title)
+    result = await session.execute(query)
+    return result.scalar()

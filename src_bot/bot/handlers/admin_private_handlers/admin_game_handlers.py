@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
 from src_bot.bot.keyboards.inline import get_callback_btns
-from src_bot.bot.keyboards.main_menu import admin_start_kb
+from src_bot.bot.keyboards.main_menu import admin_short_kb
 from src_bot.database.orm_query.orm_product import orm_create_product, orm_update_product, orm_get_product_ps
 
 games_router = Router()
@@ -27,7 +27,7 @@ async def add_games_product(message: types.Message, bot: Bot, state: FSMContext)
             await state.set_state(GAMEProduct.image)
             await message.answer('Добавьте фотографию')
         else:
-            await message.answer('Действия отменены', reply_markup=admin_start_kb)
+            await message.answer('Действия отменены', reply_markup=admin_short_kb)
             await state.clear()
 
 
@@ -110,7 +110,7 @@ async def update_ps_store(callback: types.CallbackQuery, state: FSMContext, bot:
             await state.set_state(ProductUpdate.image)
             await callback.message.answer('Добавьте фотографию')
         else:
-            await callback.message.answer('Действия отменены', reply_markup=admin_start_kb)
+            await callback.message.answer('Действия отменены', reply_markup=admin_short_kb)
             await state.clear()
 
 

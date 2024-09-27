@@ -103,7 +103,6 @@ async def get_orders_awaiting_payment(message: types.Message, bot: Bot, session:
                 count += 1
             """shop orders"""
             shop_orders = await orm_get_all_shop_orders_waiting_for_payment(session)
-            print(shop_orders)
             for order in shop_orders:
                 user = await orm_check_user(session, order.user_id)
                 if user is None:
@@ -174,7 +173,7 @@ async def get_order_awaiting_complete(message: types.Message, bot: Bot, session:
                         }))
                 else:
                     await message.answer(
-                        text=f"#shipping\nТовары - {order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ ожидает доставки.\nСумма к оплате - {round(order.amount, 0)} руб.",
+                        text=f"#shipping\nТовары - {order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ ожидает доставки.\nСумма к оплате - {round(order.amount, 0)} руб.\nТелефон - {user.phone}",
                         reply_markup=get_callback_btns(btns={
                             'Отправлен': f'sent_{order.id}',
                             'Отменить': f'shipcancel_{order.id}',

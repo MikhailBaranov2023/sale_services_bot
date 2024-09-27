@@ -43,7 +43,7 @@ def get_user_ps_btns(*, level: int, sizes: tuple[int] = (2, 1, 2, 1)):
         'PS+ ESSENTIAL': 'essential',
         'PS+ EXTRA': 'extra',
         'PS+ DELUXE': 'deluxe',
-        'Купить игру': 'ps_game',
+        'Купить игру': 'Game',
         'Отзывы': 'feedback',
         'Чем отличаются подписки?': 'Subscription difference',
     }
@@ -51,9 +51,9 @@ def get_user_ps_btns(*, level: int, sizes: tuple[int] = (2, 1, 2, 1)):
         if menu_name == 'essential' or menu_name == 'extra' or menu_name == 'deluxe':
             keyboard.add(InlineKeyboardButton(text=text,
                                               callback_data=MenuCallBack(level=level + 1, menu_name=menu_name).pack()))
-        elif menu_name == 'buy_ps_game':
+        elif menu_name == 'Game':
             keyboard.add(InlineKeyboardButton(text=text,
-                                              callback_data=MenuCallBack(level=3, menu_name=menu_name).pack()))
+                                              callback_data=MenuCallBack(level=level + 1, menu_name=menu_name).pack()))
         else:
             keyboard.add(InlineKeyboardButton(text=text,
                                               callback_data=MenuCallBack(level=level, menu_name=menu_name).pack()))
@@ -77,5 +77,14 @@ def get_user_product_btns(*, level: int, product, sizes: tuple[int] = (1,), menu
     keyboard.add(InlineKeyboardButton(text='Купить', callback_data=f'psbuy_{product.id}'))
     keyboard.add(
         InlineKeyboardButton(text='Назад', callback_data=MenuCallBack(level=level - 1, menu_name=menu_name).pack()))
+
+    return keyboard.adjust(*sizes).as_markup()
+
+
+def get_game_btns(*, level: int, sizes: tuple[int] = (1,)):
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(InlineKeyboardButton(text='Купить игру', callback_data=f'ps_game'))
+    keyboard.add(
+        InlineKeyboardButton(text='Назад', callback_data=MenuCallBack(level=level - 1, menu_name='PS Store').pack()))
 
     return keyboard.adjust(*sizes).as_markup()

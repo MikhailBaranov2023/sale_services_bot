@@ -15,139 +15,12 @@ from src_bot.database.orm_query.orm_users import orm_check_user
 shop_router = Router()
 
 
-@shop_router.message(F.text == 'SHOP Заказы ожидающие рассчета')
-async def all_shop_orders(message: types.Message, session: AsyncSession, bot: Bot):
-    count = 0
-    if message.from_user.id in bot.my_admins_list:
-        try:
-            orders = await orm_get_all_shop_orders_awaiting_calculate(session)
-            for order in orders:
-                user = await orm_check_user(session, order.user_id)
-                if user is None:
-                    await message.answer(
-                        text=f"#SHOP\nТовары - {order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь удален,\nЗаказ не оплачен,\nТрек-номер - {order.track_number}",
-                        reply_markup=get_callback_btns(btns={
-                            'Оплачено': f'payment_{order.id}',
-                            'Отменить': f'cancel_{order.id}',
-                            'Написать пользователю': f'message_{order.id}',
-                        }))
-                else:
-
-                    await message.answer(
-                        text=f"#SHOP\nТовары - {order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ не оплачен,\nТрек-номер - {order.track_number}",
-                        reply_markup=get_callback_btns(btns={
-                            'Оплачено': f'payment_{order.id}',
-                            'Отменить': f'cancel_{order.id}',
-                            'Написать пользователю': f'message_{order.id}',
-                        }))
-                count += 1
-            if count == 0:
-                await message.answer(
-                    text="Нет заказов")
-        except Exception as e:
-            await message.answer('При выполнении запроса возникла ошибка.\nПроверьте бота.')
-    else:
-        await message.answer(message.text)
-
-
-@shop_router.message(F.text == 'SHOP Отмененные заказы')
-async def all_shop_orders(message: types.Message, session: AsyncSession, bot: Bot):
-    count = 0
-    if message.from_user.id in bot.my_admins_list:
-        # try:
-        orders = await orm_get_all_cancel_order_shop(session)
-        for order in orders:
-            user = await orm_check_user(session, order.user_id)
-            if user is None:
-                await message.answer(
-                    text=f"#SHOP\nТовары-{order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ отменен")
-            else:
-                await message.answer(
-                    text=f"#SHOP\nТовары-{order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ отменен")
-            count += 1
-        if count == 0:
-            await message.answer(
-                text="Нет отмененных заказов")
-    # except Exception as e:
-    #     await message.answer('При выполнении запроса возникла ошибка.\nПроверьте бота.')
-    else:
-        await message.answer(message.text)
-
-
-@shop_router.message(F.text == 'SHOP Оплаченные заказы, ожидающие доставки')
-async def all_shop_orders_wait_shipping(message: types.Message, session: AsyncSession, bot: Bot):
-    count = 0
-    if message.from_user.id in bot.my_admins_list:
-        try:
-            orders = await orm_get_order_shop_wait_shipping(session=session)
-            for order in orders:
-                user = await orm_check_user(session, order.user_id)
-                if user is None:
-                    await message.answer(
-                        text=f"#SHOP\nТовары-{order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь удален,\nЗаказ оплачен",
-                        reply_markup=get_callback_btns(btns={
-                            'Отменить': f'cancel_{order.id}',
-                            'Добавить трек код': f'track_{order.id}',
-                            'Написать пользователю': f'message_{order.id}',
-                        }))
-
-                else:
-                    await message.answer(
-                        text=f"#SHOP\nТовары-{order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ оплачен,",
-                        reply_markup=get_callback_btns(btns={
-                            'Отменить': f'cancel_{order.id}',
-                            'Добавить трек код': f'track_{order.id}',
-                            'Написать пользователю': f'message_{order.id}',
-                        }))
-                count += 1
-            if count == 0:
-                await message.answer(
-                    text="Нет заказов заказов")
-        except Exception as e:
-            await message.answer('При выполнении запроса возникла ошибка.\nПроверьте бота.')
-    else:
-        await message.answer(message.text)
-
-
-@shop_router.message(F.text == 'SHOP Заказы в доставке')
-async def all_shop_orders_wait_complete(message: types.Message, session: AsyncSession, bot: Bot):
-    count = 0
-    if message.from_user.id in bot.my_admins_list:
-        try:
-            orders = await orm_get_order_shop_wait_complete(session=session)
-            for order in orders:
-                user = await orm_check_user(session, order.user_id)
-                if user is None:
-                    await message.answer(
-                        text=f"#SHOP\nТовары-{order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь удален,\nЗаказ оплачен",
-                        reply_markup=get_callback_btns(btns={
-                            'Исполнено': f'complete_{order.id}',
-                            'Написать пользователю': f'message_{order.id}',
-                        }))
-
-                else:
-                    await message.answer(
-                        text=f"#SHOP\nТовары-{order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ оплачен,",
-                        reply_markup=get_callback_btns(btns={
-                            'Исполнено': f'complete_{order.id}',
-                            'Написать пользователю': f'message_{order.id}',
-                        }))
-                count += 1
-            if count == 0:
-                await message.answer(
-                    text="Нет заказов заказов")
-        except Exception as e:
-            await message.answer('При выполнении запроса возникла ошибка.\nПроверьте бота.')
-    else:
-        await message.answer(message.text)
-
-
 class TrackNumber(StatesGroup):
     order_shop_id = State()
     track_number = State()
 
 
-@shop_router.callback_query(F.data.startswith('track_'), StateFilter(None))
+@shop_router.callback_query(F.data.startswith('sent_'), StateFilter(None))
 async def add_track_number(callback: types.CallbackQuery, bot: Bot, state: F):
     if callback.from_user.id in bot.my_admins_list:
         current_state = await state.get_state()
@@ -172,10 +45,11 @@ async def add_track_number_order_shop(message: types.Message, session: AsyncSess
                                    text=f'Ваш заказ : {order.url} отправлен.\nВы можете отслеживать статус доставки на сайте - \n Ваш трек код - {order.track_number}')
             await message.answer('Трек код добавлен')
             await bot.delete_message(message_id=message.message_id, chat_id=message.from_user.id)
+            await state.clear()
 
         else:
-            await message.answer('Заказу уже присвоен трек код.')
-            await bot.delete_message(message_id=message.message_id, chat_id=message.from_user.id)
+            await message.answer('Этот заказ уже отправлен.')
+            await state.clear()
 
     except Exception as e:
         await message.answer('что то пошло не так')
@@ -212,7 +86,8 @@ async def add_amount_for_order_shop(message: types.Message, state: FSMContext, s
         try:
             user = await orm_check_user(user_id=order.user_id, session=session)
             await bot.send_message(chat_id=user.chat_id,
-                                   text=f'Общая сумма к оплате с комиссией-{round(order.amount, 2)}руб\nВы можете оплатить через СБП по номеру +79998502717(Райфайзенбанк), либо по номеру карты')
+                                   text=f'Общая сумма к оплате с комиссией-{round(order.amount, 2)}руб\nВы можете оплатить через СБП по номеру +79998502717(Райфайзенбанк), либо по номеру карты\n\nПосле оплаты пожалуйтса нажмите на кнопку "Оплачено"',
+                                   reply_markup=get_callback_btns(btns={'Оплачено': f'shipipaid_{order.id}'}))
         except Exception as e:
             pass
     except Exception as e:
@@ -220,12 +95,12 @@ async def add_amount_for_order_shop(message: types.Message, state: FSMContext, s
         await state.clear()
 
 
-@shop_router.callback_query(F.data.startswith('complete_'))
+@shop_router.callback_query(F.data.startswith('shipcomplete_'))
 async def complete_shop_order(callback: types.CallbackQuery, bot: Bot, session: AsyncSession):
     if callback.from_user.id in bot.my_admins_list:
         try:
             await orm_complete_order_shop(session=session, order_shop_id=int(callback.data.split('_')[-1]))
-            await callback.message.answer('Заявка исполнена')
+            await callback.message.answer('Заказ доставлен')
             order = await orm_check_order_shop(session=session, order_shop_id=int(callback.data.split('_')[-1]))
             user = await orm_check_user(session=session, user_id=order.user_id)
             chat_id = user.chat_id
@@ -252,7 +127,7 @@ async def cancel_shop_order(callback: types.CallbackQuery, bot: Bot, session: As
         await callback.message.answer('Что то пошло не так')
 
 
-@shop_router.callback_query(F.data.startswith('shippaid'), StateFilter(None))
+@shop_router.callback_query(F.data.startswith('shippaid_'), StateFilter(None))
 async def paid_shop_orders(callback: types.CallbackQuery, bot: Bot, session: AsyncSession):
     try:
         await orm_order_shop_update_payment_status(session=session, order_shop_id=int(callback.data.split('_')[-1]))
@@ -262,7 +137,8 @@ async def paid_shop_orders(callback: types.CallbackQuery, bot: Bot, session: Asy
         user = await orm_check_user(session=session, user_id=order.user_id)
         chat_id = user.chat_id
         await bot.send_message(chat_id=chat_id,
-                               text=f'Выша оплата принята.\n\nВ ближайщее время мы оплатим ваши товары и пришлем вам всю необходимую информацию.\n\nКогда мы отправим ваш заказ, вы получите сообщение и трек-код по которому можно будет отслеживать ваш заказ.\nПо другим вопросам можете обратиться к администратору @problemaprod .')
+                               text=f'Выша оплата принята.\n\nВ ближайщее время мы оплатим ваши товары и пришлем вам всю необходимую информацию.\n\nКогда мы отправим ваш заказ, вы получите сообщение и трек-код по которому можно будет отслеживать ваш заказ.\n\nПо другим вопросам можете обратиться к администратору.',
+                               reply_markup=get_callback_btns(btns={'Cвязаться с администратором': 'admin_message', }))
     except Exception as e:
         await callback.message.answer('Что то пошло не так')
 
@@ -282,6 +158,8 @@ async def write_to_user(callback: types.CallbackQuery, bot: Bot, state: FSMConte
             await state.update_data(user_id=order.user_id)
             await state.set_state(Message.message)
             await callback.message.answer('Введите ваше сообщение')
+        else:
+            await state.clear()
 
 
 @shop_router.message(Message.message, F.text)
@@ -292,7 +170,8 @@ async def add_message(message: types.Message, session: AsyncSession, bot: Bot, s
     chat_id = user.chat_id
     try:
         await bot.send_message(chat_id=chat_id,
-                               text=f"Администратор отправил вам сообщение:\n\n'{data['message']}'.\n\nДля того чтобы ответить свяжитесь с администратором @problemaprod")
+                               text=f"Администратор отправил вам сообщение:\n\n'{data['message']}'.\n\nДля того чтобы ответить свяжитесь с администратором",
+                               reply_markup=get_callback_btns(btns={'Cвязаться с администратором': 'admin_message'}))
         await bot.delete_message(message_id=message.message_id, chat_id=message.from_user.id)
 
         await message.answer('Сообщение отправлено')

@@ -51,7 +51,7 @@ async def add_url_order(message: types.Message, state: FSMContext):
 async def add_address(message: types.Message, state: FSMContext):
     await state.update_data(address=message.text)
     await message.answer(
-        'Введите описание.\nЗдесь вы можете указать дополнительную информацию необходимую для оплаты,\n\n Например, это может быты размер, желаемый цвет, промокод и тд.\n\nПомимо этого, вы можете написать сюда дополнительные вопросы связанные с конкретным заказом которые хотели бы задать администратору')
+        'Введите описание.\n\nЗдесь вы можете указать дополнительную информацию необходимую для оплаты,\n\n Например, это может быты размер, желаемый цвет, промокод и тд.\n\nПомимо этого, вы можете написать сюда дополнительные вопросы связанные с конкретным заказом которые хотели бы задать администратору')
     await state.set_state(OrderShop.description)
 
 
@@ -63,15 +63,15 @@ async def add_description_order(message: types.Message, state: FSMContext, bot: 
     try:
         await orm_create_order_shop(session, data)
         await message.answer(
-            'Ваша заявка принята.\nВ близжайщее время мы рассчитаем итоговую стоимость и пришлем вам реквизиты для оплаты.',
+            'Ваша заявка принята.\n\nВ ближайшее время мы рассчитаем итоговую стоимость и пришлем вам реквизиты для оплаты.',
             reply_markup=user_start_kb)
         order = await orm_get_order_shop(session, data)
         await bot.send_message(chat_id=bot.my_admins_list[0],
-                               text=f"#SHOP\nНОВЫЙ ЗАКАЗ\nТовары-{order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ не оплачен.",
+                               text=f"#shipping\nТовары - {order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ не оплачен.",
                                reply_markup=get_callback_btns(btns={
-                                   'Оплачено': f'payment_{order.id}',
-                                   'Отменить': f'cancel_{order.id}',
-                                   'Написать пользователю': f'message_{order.id}',
+                                   'Расчитать': f'shipcalculate_{order.id}',
+                                   'Отменить': f'shipcancel_{order.id}',
+                                   'Написать клиенту': f'shipmessage_{order.id}',
                                }))
 
         await state.clear()

@@ -26,6 +26,17 @@ async def orm_create_order_games(session: AsyncSession, data: dict):
     await session.commit()
 
 
+async def orm_create_order_game(session: AsyncSession, data: dict):
+    obj = Order(
+        type=data['type'],
+        description=data['description'],
+        user_id=data['user_id'],
+        url=data['url'],
+    )
+    session.add(obj)
+    await session.commit()
+
+
 async def orm_get_order(session: AsyncSession, data: dict):
     query = select(Order).where(Order.type == data['type'],
                                 Order.description == data['description'],
@@ -50,9 +61,9 @@ async def orm_check_order(session: AsyncSession, order_id: int):
 
 
 async def orm_user_orders(session: AsyncSession, user_id: int):
-    query = select(Order).where(Order.user_id == user_id)
+    query = select(Order).where(Order.user_id == user_id, Order.cancel_status == False)
     result = await session.execute(query)
-    return result.scalar()
+    return result.scalars()
 
 
 async def orm_get_all_orders_awaiting_calculate(session: AsyncSession):
@@ -84,7 +95,8 @@ async def orm_get_cancel_orders(session: AsyncSession):
 
 
 async def orm_get_services_order_wait_complete(session: AsyncSession):
-    query = select(Order).order_by(Order.created).where(Order.order_status == False, Order.payment_status == True)
+    query = select(Order).order_by(Order.created).where(Order.order_status == False, Order.payment_status == True,
+                                                        Order.cancel_status == False)
     result = await session.execute(query)
     return result.scalars().all()
 

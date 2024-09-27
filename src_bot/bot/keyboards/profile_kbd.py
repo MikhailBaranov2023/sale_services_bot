@@ -6,9 +6,9 @@ profile_kbd = ReplyKeyboardMarkup(
             KeyboardButton(text='Мои заказы'),
             KeyboardButton(text='Подписаться на уведомления'),
         ],
-        [
-            KeyboardButton(text='Получить реферальный код'),
-        ],
+        # [
+        #     KeyboardButton(text='Получить реферальный код'),
+        # ],
         [
             KeyboardButton(text='Главное меню')
         ]
@@ -24,4 +24,16 @@ register_kbd = ReplyKeyboardMarkup(
 
     ],
     resize_keyboard=True,
+)
+
+my_orders_kbd = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text='Мои заказы в доставке'),
+            KeyboardButton(text='Заказы по оплате сервисов'),
+        ],
+        [
+          KeyboardButton(text='Профиль')
+        ],
+    ], resize_keyboard=True
 )

@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
 from src_bot.bot.keyboards.inline import get_callback_btns
-from src_bot.bot.keyboards.main_menu import admin_start_kb
+from src_bot.bot.keyboards.main_menu import admin_short_kb
 from src_bot.database.orm_query.orm_order import orm_update_amount_order, orm_check_order, \
     orm_cancel_order, orm_get_cancel_orders, orm_get_services_order_wait_complete, orm_complete_order, \
     orm_order_update_payment_status
@@ -15,6 +15,7 @@ from src_bot.database.orm_query.orm_users import orm_check_user
 services_router = Router()
 
 
+#
 # class ServicesProduct(StatesGroup):
 #     image = State()
 #     title = State()
@@ -31,7 +32,7 @@ services_router = Router()
 #             await state.set_state(ServicesProduct.image)
 #             await message.answer('Добавьте фотографию')
 #         else:
-#             await message.answer('Действия отменены', reply_markup=admin_start_kb)
+#             await message.answer('Действия отменены', reply_markup=admin_short_kb)
 #             await state.clear()
 #
 #
@@ -76,70 +77,7 @@ services_router = Router()
 #     except Exception as e:
 #         await state.clear()
 #         await message.answer('Что то пошло не так')
-
-
-@services_router.message(F.text == 'SERVICES Отмененные заказы')
-async def all_cancel_services_orders(message: types.Message, session: AsyncSession, bot: Bot):
-    count = 0
-    if message.from_user.id in bot.my_admins_list:
-        try:
-            orders = await orm_get_cancel_orders(session=session)
-            for order in orders:
-                user = await orm_check_user(session, order.user_id)
-                if user is None:
-                    await message.answer(
-                        text=f"#SERVICES\nCервис для оплаты - {order.url},\nОписание - {order.description},\nПользователь удален,\nЗаказ отменен",
-                        reply_markup=get_callback_btns(btns={
-                            'Написать пользователю': f'SERVICESmessage_{order.id}',
-                        }))
-                else:
-                    await message.answer(
-                        text=f"#SERVICES\nCервис для оплаты - {order.url},\nОписание - {order.description}\nПользователь - @{user.user_name},\nЗаказ отменен.",
-                        reply_markup=get_callback_btns(btns={
-                            'Написать пользователю': f'SERVICESmessage_{order.id}',
-                        }))
-                count += 1
-            if count == 0:
-                await message.answer(
-                    text="Нет заказов ожидающих оплаты")
-        except Exception as e:
-            await message.answer('Что то пошло не так')
-
-
-@services_router.message(F.text == 'SERVICES Оплаченные заказы, ожидающие исполнения')
-async def all_shop_orders_wait_complete(message: types.Message, session: AsyncSession, bot: Bot):
-    count = 0
-    if message.from_user.id in bot.my_admins_list:
-        try:
-            orders = await orm_get_services_order_wait_complete(session=session)
-            for order in orders:
-                user = await orm_check_user(session, order.user_id)
-                if user is None:
-                    await message.answer(
-                        text=f"#SERVICES\nCервис для оплаты-{order.url},\nОписание - {order.description},\nПользователь удален,\nЗаказ оплачен",
-                        reply_markup=get_callback_btns(btns={
-                            'Отменить': f'SERVICEScancel_{order.id}', \
-                            'Исполнено': f'SERVICEcomplete_{order.id}',
-                            'Написать пользователю': f'SERVICESmessage_{order.id}',
-                        }))
-
-                else:
-                    await message.answer(
-                        text=f"#SERVICES\nCервис для оплаты-{order.url},\nОписание - {order.description},\nПользователь - @{user.user_name},\nЗаказ оплачен,",
-                        reply_markup=get_callback_btns(btns={
-                            'Отменить': f'SERVICEScancel_{order.id}',
-                            'Исполнено': f'SERVICEcomplete_{order.id}',
-                            'Написать пользователю': f'SERVICESmessage_{order.id}',
-                        }))
-                count += 1
-            if count == 0:
-                await message.answer(
-                    text="Нет заказов заказов")
-        except Exception as e:
-            await message.answer('При выполнении запроса возникла ошибка.\nПроверьте бота.')
-    else:
-        await message.answer(message.text)
-
+#
 
 class AmountServices(StatesGroup):
     order_id = State()
@@ -172,7 +110,8 @@ async def add_amount_for_order_shop(message: types.Message, state: FSMContext, s
         try:
             user = await orm_check_user(user_id=order.user_id, session=session)
             await bot.send_message(chat_id=user.chat_id,
-                                   text=f'Общая сумма к оплате с комиссией-{round(order.amount, 2)}руб\n\nВы можете оплатить через СБП по номеру +79998502717(Райфайзенбанк), либо по номеру карты')
+                                   text=f'Общая сумма к оплате с комиссией-{round(order.amount, 2)}руб\n\nВы можете оплатить через СБП по номеру +79998502717(Райфайзенбанк), либо по номеру карты\n\nПосле оплаты пожалуйтса нажмите на кнопку "Оплачено"',
+                                   reply_markup=get_callback_btns(btns={'Оплачено': f'ipaid_{order.id}'}))
         except Exception as e:
             pass
     except Exception as e:
@@ -223,7 +162,8 @@ async def paid_order(callback: types.CallbackQuery, bot: Bot, session: AsyncSess
         chat_id = user.chat_id
         await bot.delete_message(message_id=callback.message.message_id, chat_id=callback.from_user.id)
         await bot.send_message(chat_id=chat_id,
-                               text=f'Выша оплата принята.\nВ ближайщее время мы оплатим нужный сервис и пришлем вам всю необходимую информацию.\nПо другим вопросам можете обратиться к администратору @problemaprod .')
+                               text=f'Выша оплата принята.\n\nВ ближайщее время мы оплатим нужный сервис и пришлем вам всю необходимую информацию.\n\nПо другим вопросам можете обратиться к администратору.',
+                               reply_markup=get_callback_btns(btns={'Cвязаться с администратором': 'admin_message', }))
     except Exception as e:
         await callback.message.answer('Что то пошло не так')
 
@@ -243,7 +183,7 @@ async def cancel_order(callback: types.CallbackQuery, bot: Bot, session: AsyncSe
         await callback.message.answer('Что то пошло не так')
 
 
-@services_router.callback_query(F.data.startswith('compelete_'))
+@services_router.callback_query(F.data.startswith('complete_'))
 async def complete_order(callback: types.CallbackQuery, bot: Bot, session: AsyncSession):
     if callback.from_user.id in bot.my_admins_list:
         try:
@@ -252,9 +192,9 @@ async def complete_order(callback: types.CallbackQuery, bot: Bot, session: Async
             order = await orm_check_order(session=session, order_id=int(callback.data.split('_')[-1]))
             user = await orm_check_user(session=session, user_id=order.user_id)
             chat_id = user.chat_id
-            await bot.delete_message(message_id=callback.message.message_id, chat_id=callback.from_user.id)
 
             await bot.send_message(chat_id=chat_id,
                                    text=f'Ваша завка по оплате сервиса:"{order.url}" исполнена.\n\n Будем рад видеть вас снова.')
         except Exception as e:
+            print(e)
             await callback.message.answer('Что то пошло не так')
