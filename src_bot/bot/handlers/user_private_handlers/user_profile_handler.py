@@ -78,7 +78,9 @@ async def my_ship_orders(message: types.Message, session: AsyncSession):
     orders = await orm_user_shop_orders(session, user_id=user.id)
     count = 0
     for order in orders:
-        if order.amount is None:
+        if order.cancel_status is True or order.order_status is True:
+            continue
+        elif order.amount is None:
             await message.answer(
                 text=f"Заказ ожидает рассчета. В близжайщее время с вами свяжется администратор.\n\nДетали заказа:\nТовары - {order.url},\nАдрес доставки - {order.address},\nОписание - {order.description},\n\nЗаказ не оплачен.",
                 reply_markup=get_callback_btns(btns={
@@ -122,7 +124,9 @@ async def my_services_orders(message: types.Message, session: AsyncSession):
         orders = await orm_user_orders(session, user_id=user.id)
         count = 0
         for order in orders:
-            if order.amount is None:
+            if order.cancel_status is True or order.order_status is True:
+                continue
+            elif order.amount is None:
                 await message.answer(
                     text=f"Заказ ожидает рассчета. В близжайщее время с вами свяжется администратор.\n\nДетали заказа:\nСервис для оплаты - {order.url},\nОписание - {order.description},\n\nЗаказ не оплачен.",
                     reply_markup=get_callback_btns(btns={
@@ -141,13 +145,11 @@ async def my_services_orders(message: types.Message, session: AsyncSession):
                     count += 1
                 elif order.payment_status is True:
                     await message.answer(
-                        text=f"Заказ оплачен\n\nВ ближайщее время мы оплатим указанный вами сервис и пришлем вам всю необходимую информацию\n\nЕсли у вас есть вопросы вы можете связаться с администратором.\n\nДетали заказа:\nСервис для оплаты - {order.url},\nОписание - {order.description},\n\nЗаказ не оплачен.",
+                        text=f"Заказ оплачен\n\nВ ближайщее время мы оплатим указанный вами сервис и пришлем вам всю необходимую информацию\n\nЕсли у вас есть вопросы вы можете связаться с администратором.\n\nДетали заказа:\nСервис для оплаты - {order.url},\nОписание - {order.description},\n\n",
                         reply_markup=get_callback_btns(btns={
                             'Cвязаться с администратором': 'admin_message',
                         }))
                     count += 1
-                if order.cancel_status is True:
-                    continue
         if count == 0:
             await message.answer('У вас нет текущих заказов')
     except Exception as e:

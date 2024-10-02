@@ -57,15 +57,27 @@ async def profile_keyboard(message: types.Message, session: AsyncSession, state:
 
 
 @user_private_router.message(or_f(F.text == "Главное меню", Command('menu')))
-async def games_keyboard(message: types.Message, bot: Bot, session: AsyncSession):
-    if message.from_user.id in bot.my_admins_list:
-        await message.answer('Вы в админке', reply_markup=admin_short_kb)
-    else:
-        if await orm_check_user_chat_id(session, chat_id=message.from_user.id) is None:
-            await message.answer('Для того, чтобы продолжить, вам необходимо зарегистрироваться.',
-                                 reply_markup=register_kbd)
+async def games_keyboard(message: types.Message, bot: Bot, session: AsyncSession, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        if message.from_user.id in bot.my_admins_list:
+            await message.answer('Вы в админке', reply_markup=admin_short_kb)
         else:
-            await message.answer(message.text, reply_markup=user_start_kb)
+            if await orm_check_user_chat_id(session, chat_id=message.from_user.id) is None:
+                await message.answer('Для того, чтобы продолжить, вам необходимо зарегистрироваться.',
+                                     reply_markup=register_kbd)
+            else:
+                await message.answer(message.text, reply_markup=user_start_kb)
+    else:
+        await state.clear()
+        if message.from_user.id in bot.my_admins_list:
+            await message.answer('Вы в админке', reply_markup=admin_short_kb)
+        else:
+            if await orm_check_user_chat_id(session, chat_id=message.from_user.id) is None:
+                await message.answer('Для того, чтобы продолжить, вам необходимо зарегистрироваться.',
+                                     reply_markup=register_kbd)
+            else:
+                await message.answer(message.text, reply_markup=user_start_kb)
 
 
 @user_private_router.message(or_f(F.text == "Доставка товаров", Command('shop')))
